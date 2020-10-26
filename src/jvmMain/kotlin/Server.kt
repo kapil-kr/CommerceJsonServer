@@ -11,7 +11,7 @@ import resources.author
 import resources.index
 import resources.posts
 import service.AuthorService
-import service.FileFactory
+//import service.FileFactory
 import service.PostService
 
 fun Application.serverConfig() {
@@ -39,7 +39,7 @@ fun Application.serverConfig() {
             }
         }
     }
-    FileFactory.init()
+//    FileFactory.init()
     val postService = PostService()
     val authorService = AuthorService()
     routing {
