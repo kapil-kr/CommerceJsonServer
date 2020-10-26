@@ -21,7 +21,10 @@ open class ServerTest {
         return this.`as`(T::class.java)
     }
 
-    private val file = File("store.json")
+    fun getFile(): File {
+        return File(this::class.java.classLoader.getResource("store.json").path)
+    }
+//    private val file = File("store.json")
 
     companion object {
 
@@ -46,12 +49,12 @@ open class ServerTest {
         @AfterAll
         @JvmStatic
         fun clearFile() {
-            File("store.json").writeText("{\"posts\":[],\"authors\":[]}")
+            File(this::class.java.classLoader.getResource("store.json").path).writeText("{\"posts\":[],\"authors\":[]}")
         }
     }
 
     @BeforeEach
     fun before() = runBlocking {
-        file.writeText("{\"posts\":[],\"authors\":[]}")
+        getFile().writeText("{\"posts\":[],\"authors\":[]}")
     }
 }
