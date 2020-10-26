@@ -1,4 +1,4 @@
-import java.io.FileInputStream
+import java.io.StringReader
 import java.util.*
 
 object AppConfiguration {
@@ -9,8 +9,8 @@ object AppConfiguration {
     val password: String
 
     init {
-        val file =  FileInputStream(object {}.javaClass.getResource("application.properties").path)
-        properties.load(file)
+        val propContent = javaClass.getResource("/application.properties").readText()
+        properties.load(StringReader(propContent))
         host = properties.getProperty("server.host")
         port = properties.getProperty("server.port")?.toInt()
         password = properties.getProperty("server.auth.password")!!

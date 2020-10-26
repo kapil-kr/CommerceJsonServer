@@ -10,12 +10,16 @@ import java.io.File
 
 class PostService {
 
-    fun getFile(): File {
-        return File(this::class.java.classLoader.getResource("store.json").path)
+    private fun getFileContent(): String {
+        return File("/store.json").readText()
+    }
+
+    private fun setFileContent(content: String) {
+        File("/store.json").writeText(content)
     }
 
     fun getPosts(title: String?, author: String?, sort: String?, order: String?): List<Post>  {
-        val store = Json.decodeFromString<BookStore>(getFile().readText())
+        val store = Json.decodeFromString<BookStore>(getFileContent())
         val ans =  store.posts.filter {
             (if(title != null && title !="")
                 it.title == title
@@ -42,21 +46,21 @@ class PostService {
 
     fun addPost(newPostItem: PostItem) {
         val newPost = Post(newPostItem.title, newPostItem.author, newPostItem.views, newPostItem.reviews)
-        val store = Json.decodeFromString<BookStore>(getFile().readText())
+        val store = Json.decodeFromString<BookStore>(getFileContent())
         store.posts.add(newPost)
-        getFile().writeText(Json.encodeToString(store))
+        setFileContent(Json.encodeToString(store))
     }
 
     fun deletePost(id: String) {
-        val store = Json.decodeFromString<BookStore>(getFile().readText())
+        val store = Json.decodeFromString<BookStore>(getFileContent())
         store.posts.removeIf {
             it.id == id
         }
-        getFile().writeText(Json.encodeToString(store))
+        setFileContent(Json.encodeToString(store))
     }
 
     fun getPostById(id: String): Post? {
-        val store = Json.decodeFromString<BookStore>(getFile().readText())
+        val store = Json.decodeFromString<BookStore>(getFileContent())
         store.posts.forEach {
             if(it.id == id)
                 return it
@@ -65,7 +69,7 @@ class PostService {
     }
 
     fun updatePost(id: String, newPost: PostItem) : Boolean {
-        val store = Json.decodeFromString<BookStore>(getFile().readText())
+        val store = Json.decodeFromString<BookStore>(getFileContent())
         store.posts.forEach {
             if(it.id == id) {
                 it.title = newPost.title
@@ -74,7 +78,7 @@ class PostService {
                 it.views = newPost.views
             }
         }
-        getFile().writeText(Json.encodeToString(store))
+        setFileContent(Json.encodeToString(store))
         return true;
     }
 
@@ -88,7 +92,7 @@ class PostService {
     }
 
     fun patchPost(id: String, newPost: Map<Any, Any>): Boolean {
-        val store = Json.decodeFromString<BookStore>(getFile().readText())
+        val store = Json.decodeFromString<BookStore>(getFileContent())
         store.posts.forEach { post ->
             if(post.id == id) {
                 newPost.forEach {
@@ -96,7 +100,7 @@ class PostService {
                 }
             }
         }
-        getFile().writeText(Json.encodeToString(store))
+        setFileContent(Json.encodeToString(store))
         return true;
     }
 }

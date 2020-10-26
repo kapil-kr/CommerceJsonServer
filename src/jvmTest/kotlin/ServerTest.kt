@@ -22,9 +22,8 @@ open class ServerTest {
     }
 
     fun getFile(): File {
-        return File(this::class.java.classLoader.getResource("store.json").path)
+        return File("/store.json")
     }
-//    private val file = File("store.json")
 
     companion object {
 
@@ -49,7 +48,7 @@ open class ServerTest {
         @AfterAll
         @JvmStatic
         fun clearFile() {
-            File(this::class.java.classLoader.getResource("store.json").path).writeText("{\"posts\":[],\"authors\":[]}")
+            File("/store.json").writeText("{\"posts\":[],\"authors\":[]}")
         }
     }
 

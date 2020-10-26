@@ -10,12 +10,19 @@ import java.io.File
 
 class AuthorService {
 
-    fun getFile(): File {
-        return File(this::class.java.classLoader.getResource("store.json").path)
+    private fun getFileContent(): String {
+        return File("/store.json").readText()
+//        return javaClass.getResource("/store.json").readText()
+    }
+
+    private fun setFileContent(content: String) {
+        File("/store.json").writeText(content)
+//        File(javaClass.getResource("/store.json").path).writeText(content)
     }
 
     fun getAuthors(firstName: String?, lastName: String?, sort: String?, order: String?): List<Author>  {
-        val store = Json.decodeFromString<BookStore>(getFile().readText())
+//        println("Sachin ${AuthorService::class.java.classLoader.getResource("store.json").path}")
+        val store = Json.decodeFromString<BookStore>(getFileContent())
         val ans =  store.authors.filter {
             (if(firstName != null && firstName != "")
                 it.first_name == firstName
@@ -37,21 +44,21 @@ class AuthorService {
 
     fun addAuthor(newAuthorItem: AuthorItem) {
         val newAuthor = Author(newAuthorItem.first_name, newAuthorItem.last_name, newAuthorItem.posts)
-        val store = Json.decodeFromString<BookStore>(getFile().readText())
+        val store = Json.decodeFromString<BookStore>(getFileContent())
         store.authors.add(newAuthor)
-        getFile().writeText(Json.encodeToString(store))
+        setFileContent(Json.encodeToString(store))
     }
 
     fun deleteAuthor(id: String) {
-        val store = Json.decodeFromString<BookStore>(getFile().readText())
+        val store = Json.decodeFromString<BookStore>(getFileContent())
         store.authors.removeIf {
             it.id == id
         }
-        getFile().writeText(Json.encodeToString(store))
+        setFileContent(Json.encodeToString(store))
     }
 
     fun getAuthorById(id: String): Author? {
-        val store = Json.decodeFromString<BookStore>(getFile().readText())
+        val store = Json.decodeFromString<BookStore>(getFileContent())
         store.authors.forEach {
             if(it.id == id)
                 return it
@@ -60,7 +67,7 @@ class AuthorService {
     }
 
     fun updateAuthor(id: String, newAuthor: AuthorItem) : Boolean {
-        val store = Json.decodeFromString<BookStore>(getFile().readText())
+        val store = Json.decodeFromString<BookStore>(getFileContent())
         store.authors.forEach {
             if(it.id == id) {
                 it.first_name = newAuthor.first_name
@@ -68,7 +75,7 @@ class AuthorService {
                 it.posts = newAuthor.posts
             }
         }
-        getFile().writeText(Json.encodeToString(store))
+        setFileContent(Json.encodeToString(store))
         return true;
     }
 
@@ -82,7 +89,7 @@ class AuthorService {
     }
 
     fun patchAuthor(id: String, newAuthor: Map<Any, Any>): Boolean {
-        val store = Json.decodeFromString<BookStore>(getFile().readText())
+        val store = Json.decodeFromString<BookStore>(getFileContent())
         store.authors.forEach { author ->
             if(author.id == id) {
                 newAuthor.forEach {
@@ -90,7 +97,7 @@ class AuthorService {
                 }
             }
         }
-        getFile().writeText(Json.encodeToString(store))
+        setFileContent(Json.encodeToString(store))
         return true;
     }
 }
